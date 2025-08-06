@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  service-a:
+    build:
+      context: ./service-a
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - SERVICE_B_URL=http://service-b:8080
+    depends_on:
+      - service-b
+    volumes:
+      - ./.env:/app/.env
+
+  service-b:
+    build:
+      context: ./service-b
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+    volumes:
+      - ./.env:/app/.env
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
